@@ -19,6 +19,7 @@
         .container {
             width: 90%;
             max-width: 600px;
+            transition: opacity 1s;
         }
 
         #question {
@@ -27,18 +28,11 @@
             font-weight: 900;
             margin: 0 0 30px;
             padding: 20px;
-            background: linear-gradient(
-                45deg,
-                #ffffff 25%,
-                #a0a0ff 50%,
-                #ffffff 75%
-            );
+            background: linear-gradient(45deg, #fff, #a0a0ff, #fff);
             -webkit-background-clip: text;
             background-clip: text;
             -webkit-text-fill-color: transparent;
-            text-shadow: 0 0 30px rgba(160, 160, 255, 0.7),
-                         0 0 60px rgba(160, 160, 255, 0.4),
-                         0 0 90px rgba(160, 160, 255, 0.2);
+            text-shadow: 0 0 30px rgba(160,160,255,0.7);
             opacity: 1;
             transform: translateY(0);
             transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
@@ -50,7 +44,7 @@
         }
 
         .chat-container {
-            background: rgba(255, 255, 255, 0.1);
+            background: rgba(255,255,255,0.1);
             border-radius: 20px;
             padding: 20px;
             backdrop-filter: blur(10px);
@@ -65,36 +59,28 @@
         }
 
         .message {
-            background: rgba(255, 255, 255, 0.15);
+            background: rgba(255,255,255,0.15);
             padding: 12px 20px;
             border-radius: 15px;
             margin: 8px 0;
-            transform: translateY(100%);
-            opacity: 0;
             animation:
-                messageAppear 0.6s cubic-bezier(0.23, 1, 0.32, 1) forwards,
-                messageExit 1.2s ease-out 1.5s forwards;
+                messageAppear 0.6s ease forwards,
+                messageExit 1.2s ease 1.5s forwards;
             position: absolute;
             width: calc(100% - 40px);
         }
 
         .message.error {
-            background: rgba(255, 50, 50, 0.3);
+            background: rgba(255, 50, 50, 0.3) !important;
         }
 
         @keyframes messageAppear {
-            to {
-                transform: translateY(0);
-                opacity: 1;
-            }
+            from { transform: translateY(100%); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
         }
 
         @keyframes messageExit {
-            to {
-                transform: translateY(-150%) perspective(500px) rotateX(45deg);
-                opacity: 0;
-                filter: blur(4px);
-            }
+            to { transform: translateY(-150%) rotateX(45deg); opacity: 0; }
         }
 
         .input-container {
@@ -107,16 +93,9 @@
             padding: 15px 25px;
             border: none;
             border-radius: 30px;
-            background: rgba(255, 255, 255, 0.1);
+            background: rgba(255,255,255,0.1);
             color: white;
             font-size: 16px;
-            transition: all 0.3s ease;
-        }
-
-        #user-input:focus {
-            outline: none;
-            background: rgba(255, 255, 255, 0.2);
-            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
         }
 
         button {
@@ -125,13 +104,87 @@
             border-radius: 30px;
             background: linear-gradient(45deg, #6a11cb, #2575fc);
             color: white;
-            font-size: 16px;
             cursor: pointer;
             transition: transform 0.2s ease;
         }
 
         button:hover {
             transform: scale(1.05);
+        }
+
+
+        #hack-btn {
+            position: fixed;
+            bottom: -100px;
+            left: 50%;
+            transform: translateX(-50%);
+            opacity: 0;
+            transition: all 1s;
+            background: linear-gradient(45deg, #2575fc, #6a11cb);
+            color: white;
+            font-weight: bold;
+            font-size: 1.2em;
+            padding: 15px 40px;
+            border-radius: 30px;
+            cursor: pointer;
+            z-index: 1000;
+            border: none;
+            box-shadow: 0 0 15px rgba(39, 117, 252, 0.5);
+            font-family: 'Courier New', monospace;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+        }
+
+        #hack-btn[inactive] {
+            opacity: 0.5;
+            filter: grayscale(80%);
+            cursor: not-allowed;
+            box-shadow: none;
+        }
+
+        #hack-btn:hover:not([inactive]) {
+            transform: translateX(-50%) scale(1.05);
+            box-shadow: 0 0 25px rgba(39, 117, 252, 0.8);
+
+        .matrix {
+            position: fixed;
+            top: 0;
+            left: 0;
+            pointer-events: none;
+            opacity: 0;
+            transition: opacity 1s;
+            z-index: 999;
+        }
+
+        .hack-message {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%,-50%);
+            font-size: 3em;
+            color: #0f0;
+            font-family: 'Courier New', monospace;
+            font-weight: bold;
+            text-align: center;
+            text-shadow:
+                0 0 10px #0f0,
+                0 0 20px #0f0,
+                0 0 30px #0f0;
+            opacity: 0;
+            animation:
+                glitch 0.3s infinite,
+                float 3s ease-in-out infinite;
+        }
+
+        @keyframes glitch {
+            0% { text-shadow: 3px 0 0 red, -3px 0 0 blue; }
+            50% { text-shadow: -3px 0 0 blue, 3px 0 0 red; }
+            100% { text-shadow: 3px 0 0 red, -3px 0 0 blue; }
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translate(-50%, -52%); }
+            50% { transform: translate(-50%, -48%); }
         }
     </style>
 </head>
@@ -147,7 +200,12 @@
         </div>
     </div>
 
+
+    <button id="hack-btn" disabled>АКТИВИРОВАТЬ ПРОТОКОЛ</button>
+    <canvas class="matrix"></canvas>
+
     <script>
+
         const QUIZ = {
             "Какое слово ассоциируется с гербом Украины?": "ШIН",
             "Сколько лет создателю сайта?": "13",
@@ -158,6 +216,98 @@
             "Меню какого сайта признано лучшими дизайнерами 2025 года?": "GitHub"
         };
 
+
+        const secretCode = btoa("enable_protocol:omega");
+        let hackEnabled = false;
+        const hackBtn = document.getElementById('hack-btn');
+        const matrixCanvas = document.querySelector('.matrix');
+        const ctx = matrixCanvas.getContext('2d');
+        const hackMessage = document.querySelector('.hack-message');
+
+
+        function initMatrix() {
+            matrixCanvas.width = window.innerWidth;
+            matrixCanvas.height = window.innerHeight;
+            const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
+            const drops = Array(Math.floor(matrixCanvas.width/20)).fill(0);
+
+            function draw() {
+                ctx.fillStyle = 'rgba(0, 0, 0, 0.05)';
+                ctx.fillRect(0, 0, matrixCanvas.width, matrixCanvas.height);
+                ctx.fillStyle = '#0f0';
+                ctx.font = '18px monospace';
+
+                drops.forEach((drop, i) => {
+                    ctx.fillText(
+                        chars[Math.floor(Math.random() * chars.length)],
+                        i * 20,
+                        drop * 20
+                    );
+                    drops[i] = drop > matrixCanvas.height/20 ? 0 : drop + 1;
+                });
+            }
+            setInterval(draw, 50);
+        }
+
+
+        function sendFakeRequests() {
+            const fakeEndpoints = [
+                '/api/logs',
+                '/security/check',
+                '/system/status',
+                '/debug/console'
+            ];
+
+
+            fetch(`/secret/${secretCode}`, {
+                headers: {
+                    'X-Special-Packet': 'true',
+                    'Content-Type': 'application/octet-stream'
+                }
+            });
+
+
+            for(let i = 0; i < 15; i++) {
+                fetch(fakeEndpoints[Math.floor(Math.random() * fakeEndpoints.length)], {
+                    method: Math.random() > 0.5 ? 'GET' : 'POST'
+                });
+            }
+        }
+
+
+        function checkAnswer() {
+            const input = document.getElementById('user-input');
+            const answer = input.value.trim();
+
+
+            if(answer === "enable_protocol:omega" && !hackEnabled) {
+                hackEnabled = true;
+                hackBtn.style.bottom = '20px';
+                hackBtn.style.opacity = '1';
+                hackBtn.disabled = false;
+                input.value = '';
+                return;
+            }
+
+
+            const isCorrect = answer.toLowerCase() === QUIZ[currentQuestion].toLowerCase();
+            addMessage(answer, !isCorrect);
+            input.value = '';
+
+            if(isCorrect) setTimeout(getNextQuestion, 1000);
+        }
+
+
+        hackBtn.addEventListener('click', () => {
+            if(hackBtn.hasAttribute('inactive')) return;
+
+            document.querySelector('.container').style.opacity = '0';
+            matrixCanvas.style.opacity = '1';
+            hackMessage.style.opacity = '1';
+            initMatrix();
+        });
+
+
         let questions = [];
         let currentQuestion = '';
         let isAnimating = false;
@@ -165,75 +315,56 @@
         function initQuestions() {
             questions = Object.keys(QUIZ);
             shuffleArray(questions);
+            getNextQuestion();
         }
 
         function getNextQuestion() {
-            if (isAnimating) return;
-
+            if(isAnimating) return;
             isAnimating = true;
-            const questionElement = document.getElementById('question');
 
-            // Анимация исчезновения
+            const questionElement = document.getElementById('question');
             questionElement.classList.add('hidden');
 
             setTimeout(() => {
-                if (questions.length === 0) initQuestions();
+                if(questions.length === 0) initQuestions();
                 currentQuestion = questions.pop();
                 questionElement.textContent = currentQuestion;
-
-                // Анимация появления
                 questionElement.classList.remove('hidden');
                 isAnimating = false;
             }, 500);
         }
 
-        function shuffleArray(array) {
-            for (let i = array.length - 1; i > 0; i--) {
+        function shuffleArray(arr) {
+            for(let i = arr.length - 1; i > 0; i--) {
                 const j = Math.floor(Math.random() * (i + 1));
-                [array[i], array[j]] = [array[j], array[i]];
+                [arr[i], arr[j]] = [arr[j], arr[i]];
             }
         }
 
-        function addMessage(text, isError = false) {
-            const message = document.createElement('div');
-            message.className = `message ${isError ? 'error' : ''}`;
-            message.textContent = text;
-
-            const history = document.getElementById('message-history');
-            history.appendChild(message);
+        function addMessage(text, isError) {
+            const msg = document.createElement('div');
+            msg.className = `message ${isError ? 'error' : ''}`;
+            msg.textContent = text;
+            document.getElementById('message-history').appendChild(msg);
 
             setTimeout(() => {
-                message.style.opacity = '0';
-                setTimeout(() => message.remove(), 1200);
+                msg.style.opacity = '0';
+                setTimeout(() => msg.remove(), 1200);
             }, 1500);
         }
 
-        function checkAnswer() {
-            const input = document.getElementById('user-input');
-            const userAnswer = input.value.trim();
-
-            if (!userAnswer || isAnimating) return;
-
-            const isCorrect = userAnswer.toLowerCase() === QUIZ[currentQuestion].toLowerCase();
-
-            addMessage(userAnswer, !isCorrect);
-            input.value = '';
-
-            if (isCorrect) {
-                setTimeout(() => {
-                    getNextQuestion();
-                }, 1000);
-            }
-        }
-
-        document.getElementById('user-input').addEventListener('keypress', (e) => {
-            if (e.key === 'Enter') checkAnswer();
-        });
 
         window.onload = () => {
             initQuestions();
-            getNextQuestion();
+            sendFakeRequests();
+            document.getElementById('user-input').focus();
         };
+
+        document.getElementById('user-input').addEventListener('keypress', e => {
+            if(e.key === 'Enter') checkAnswer();
+        });
+
+        hackBtn.setAttribute('inactive', '');
     </script>
 </body>
 </html>
