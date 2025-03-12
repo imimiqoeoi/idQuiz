@@ -1,0 +1,239 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <title>Сверкающий Q&A</title>
+    <style>
+        body {
+            margin: 0;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            font-family: 'Arial', sans-serif;
+            background: #0a0a1a;
+            color: white;
+        }
+
+        .container {
+            width: 90%;
+            max-width: 600px;
+        }
+
+        #question {
+            text-align: center;
+            font-size: 2.5em;
+            font-weight: 900;
+            margin: 0 0 30px;
+            padding: 20px;
+            background: linear-gradient(
+                45deg,
+                #ffffff 25%,
+                #a0a0ff 50%,
+                #ffffff 75%
+            );
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
+            text-shadow: 0 0 30px rgba(160, 160, 255, 0.7),
+                         0 0 60px rgba(160, 160, 255, 0.4),
+                         0 0 90px rgba(160, 160, 255, 0.2);
+            opacity: 1;
+            transform: translateY(0);
+            transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        #question.hidden {
+            opacity: 0;
+            transform: translateY(-20px);
+        }
+
+        .chat-container {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 20px;
+            padding: 20px;
+            backdrop-filter: blur(10px);
+            box-shadow: 0 8px 32px rgba(0,0,0,0.1);
+        }
+
+        #message-history {
+            height: 150px;
+            margin-bottom: 20px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .message {
+            background: rgba(255, 255, 255, 0.15);
+            padding: 12px 20px;
+            border-radius: 15px;
+            margin: 8px 0;
+            transform: translateY(100%);
+            opacity: 0;
+            animation:
+                messageAppear 0.6s cubic-bezier(0.23, 1, 0.32, 1) forwards,
+                messageExit 1.2s ease-out 1.5s forwards;
+            position: absolute;
+            width: calc(100% - 40px);
+        }
+
+        .message.error {
+            background: rgba(255, 50, 50, 0.3);
+        }
+
+        @keyframes messageAppear {
+            to {
+                transform: translateY(0);
+                opacity: 1;
+            }
+        }
+
+        @keyframes messageExit {
+            to {
+                transform: translateY(-150%) perspective(500px) rotateX(45deg);
+                opacity: 0;
+                filter: blur(4px);
+            }
+        }
+
+        .input-container {
+            display: flex;
+            gap: 10px;
+        }
+
+        #user-input {
+            flex-grow: 1;
+            padding: 15px 25px;
+            border: none;
+            border-radius: 30px;
+            background: rgba(255, 255, 255, 0.1);
+            color: white;
+            font-size: 16px;
+            transition: all 0.3s ease;
+        }
+
+        #user-input:focus {
+            outline: none;
+            background: rgba(255, 255, 255, 0.2);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        }
+
+        button {
+            padding: 15px 30px;
+            border: none;
+            border-radius: 30px;
+            background: linear-gradient(45deg, #6a11cb, #2575fc);
+            color: white;
+            font-size: 16px;
+            cursor: pointer;
+            transition: transform 0.2s ease;
+        }
+
+        button:hover {
+            transform: scale(1.05);
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div id="question"></div>
+        <div class="chat-container">
+            <div id="message-history"></div>
+            <div class="input-container">
+                <input type="text" id="user-input" placeholder="Введите ответ...">
+                <button onclick="checkAnswer()">Отправить</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const QUIZ = {
+            "Какое слово ассоциируется с гербом Украины?": "ШIН",
+            "Сколько лет создателю сайта?": "13",
+            "Размер члена Марка в миллиметрах? (просто число)": "5",
+            "Какой ник имеет IDFCAYM на видео с сервера Almari.cf?": "OneOfThem_",
+            "Как звали Оскара из лагеря?": "Петух",
+            "Кто такой Арсений?": "Пердун",
+            "Меню какого сайта признано лучшими дизайнерами 2025 года?": "GitHub"
+        };
+
+        let questions = [];
+        let currentQuestion = '';
+        let isAnimating = false;
+
+        function initQuestions() {
+            questions = Object.keys(QUIZ);
+            shuffleArray(questions);
+        }
+
+        function getNextQuestion() {
+            if (isAnimating) return;
+
+            isAnimating = true;
+            const questionElement = document.getElementById('question');
+
+            // Анимация исчезновения
+            questionElement.classList.add('hidden');
+
+            setTimeout(() => {
+                if (questions.length === 0) initQuestions();
+                currentQuestion = questions.pop();
+                questionElement.textContent = currentQuestion;
+
+                // Анимация появления
+                questionElement.classList.remove('hidden');
+                isAnimating = false;
+            }, 500);
+        }
+
+        function shuffleArray(array) {
+            for (let i = array.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [array[i], array[j]] = [array[j], array[i]];
+            }
+        }
+
+        function addMessage(text, isError = false) {
+            const message = document.createElement('div');
+            message.className = `message ${isError ? 'error' : ''}`;
+            message.textContent = text;
+
+            const history = document.getElementById('message-history');
+            history.appendChild(message);
+
+            setTimeout(() => {
+                message.style.opacity = '0';
+                setTimeout(() => message.remove(), 1200);
+            }, 1500);
+        }
+
+        function checkAnswer() {
+            const input = document.getElementById('user-input');
+            const userAnswer = input.value.trim();
+
+            if (!userAnswer || isAnimating) return;
+
+            const isCorrect = userAnswer.toLowerCase() === QUIZ[currentQuestion].toLowerCase();
+
+            addMessage(userAnswer, !isCorrect);
+            input.value = '';
+
+            if (isCorrect) {
+                setTimeout(() => {
+                    getNextQuestion();
+                }, 1000);
+            }
+        }
+
+        document.getElementById('user-input').addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') checkAnswer();
+        });
+
+        window.onload = () => {
+            initQuestions();
+            getNextQuestion();
+        };
+    </script>
+</body>
+</html>
