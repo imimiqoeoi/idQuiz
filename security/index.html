@@ -1,0 +1,520 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Чёрный Дилер — Натуральный товар</title>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@500&family=Lato:wght@300;400&display=swap" rel="stylesheet">
+    <style>
+        /* Базовые стили */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Lato', sans-serif;
+            background: #1a1a1a;
+            color: #e8e0d2;
+            overflow-x: hidden;
+        }
+
+
+        header {
+            padding: 1.5rem 5%;
+            position: fixed;
+            width: 100%;
+            top: 0;
+            z-index: 1000;
+            background: rgba(26, 26, 26, 0.95);
+            backdrop-filter: blur(10px);
+        }
+
+        nav {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            font-family: 'Playfair Display', serif;
+            font-size: 2rem;
+            color: #d4af37;
+            text-decoration: none;
+            transition: opacity 0.3s;
+        }
+
+        .nav-links a {
+            color: #e8e0d2;
+            text-decoration: none;
+            margin-left: 2rem;
+            transition: color 0.3s;
+        }
+
+        .nav-links a:hover {
+            color: #d4af37;
+        }
+
+
+        .hero {
+            height: 100vh;
+            display: flex;
+            align-items: center;
+            padding: 0 5%;
+            margin-top: -80px;
+            background: linear-gradient(rgba(0,0,0,0.7), rgba(0,0,0,0.7)),
+                        url('https://external-content.duckduckgo.com/iu/?u=https%3A%2F%2Fpanacea.clinic%2Fwp-content%2Fuploads%2F2023%2F04%2Fvidy-narkotikov-img-960x540.jpg&f=1&nofb=1&ipt=17288165aa6de97d0bd0ba75649ef079c20d314957896850db2d8f86a1d4bc7c&ipo=images');
+            background-size: cover;
+            background-position: center;
+        }
+
+        .hero-content {
+            max-width: 600px;
+            opacity: 0;
+            transform: translateY(30px);
+            animation: fadeIn 1s forwards;
+            animation-delay: 0.5s;
+        }
+
+        h1 {
+            font-family: 'Playfair Display', serif;
+            font-size: 3.5rem;
+            margin-bottom: 1rem;
+            color: #d4af37;
+        }
+
+        .cta-btn {
+            display: inline-block;
+            padding: 1rem 2rem;
+            background: #d4af37;
+            color: #1a1a1a;
+            text-decoration: none;
+            border-radius: 30px;
+            margin-top: 2rem;
+            transition: transform 0.3s, box-shadow 0.3s;
+        }
+
+        .cta-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 5px 15px rgba(212, 175, 55, 0.3);
+        }
+
+
+        .products {
+            padding: 5rem 5%;
+        }
+
+        .product-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+            margin-top: 3rem;
+        }
+
+        .product-card {
+            background: #2a2a2a;
+            border-radius: 15px;
+            overflow: hidden;
+            transition: transform 0.3s;
+            cursor: pointer;
+        }
+
+        .product-card:hover {
+            transform: translateY(-10px);
+        }
+
+        .product-image {
+            height: 250px;
+            background-size: cover;
+            background-position: center;
+            position: relative;
+        }
+
+        .product-info {
+            padding: 1.5rem;
+        }
+
+        .price {
+            font-size: 1.2rem;
+            color: #d4af37;
+            margin: 1rem 0;
+        }
+
+
+        @keyframes fadeIn {
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+
+        @media (max-width: 768px) {
+            .nav-links {
+                display: none;
+            }
+
+            h1 {
+                font-size: 2.5rem;
+            }
+
+            .hero {
+                height: 70vh;
+            }
+        }
+
+.cart-icon {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    background: #d4af37;
+    color: #1a1a1a;
+    padding: 1rem;
+    border-radius: 50%;
+    cursor: pointer;
+    font-size: 1.5rem;
+    z-index: 1000;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+}
+
+.cart-modal {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.7);
+    justify-content: center;
+    align-items: center;
+    z-index: 1001;
+}
+
+.cart-content {
+    background: #2a2a2a;
+    padding: 2rem;
+    border-radius: 15px;
+    max-width: 500px;
+    width: 100%;
+    position: relative;
+}
+
+#cart-items {
+    max-height: 300px;
+    overflow-y: auto;
+    margin-bottom: 1rem;
+}
+
+#cart-items div {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 1rem;
+}
+
+#clear-cart, #close-cart {
+    background: #d4af37;
+    color: #1a1a1a;
+    border: none;
+    padding: 0.5rem 1rem;
+    margin-right: 0.5rem;
+    cursor: pointer;
+    border-radius: 5px;
+    transition: background 0.3s;
+}
+
+#clear-cart:hover, #close-cart:hover {
+    background: #c0a042;
+}
+
+.cart-modal {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.7);
+    justify-content: center;
+    align-items: center;
+    z-index: 1001;
+    opacity: 0;
+    transition: opacity 0.3s ease-in-out;
+}
+
+.cart-modal.active {
+    display: flex;
+    opacity: 1;
+}
+
+.cart-content {
+    background: #2a2a2a;
+    padding: 2rem;
+    border-radius: 15px;
+    max-width: 500px;
+    width: 100%;
+    position: relative;
+    transform: translateY(-50px);
+    opacity: 0;
+    transition: transform 0.3s ease-in-out, opacity 0.3s ease-in-out;
+}
+
+.cart-modal.active .cart-content {
+    transform: translateY(0);
+    opacity: 1;
+}
+
+
+.cart-icon {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    background: #d4af37;
+    color: #1a1a1a;
+    padding: 1rem;
+    border-radius: 50%;
+    cursor: pointer;
+    font-size: 1.5rem;
+    z-index: 1000;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+    transition: transform 0.3s ease-in-out, box-shadow 0.3s ease-in-out;
+}
+
+.cart-icon:hover {
+    transform: scale(1.1);
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.4);
+}
+
+
+#clear-cart, #close-cart {
+    background: #d4af37;
+    color: #1a1a1a;
+    border: none;
+    padding: 0.5rem 1rem;
+    margin-right: 0.5rem;
+    cursor: pointer;
+    border-radius: 5px;
+    transition: background 0.3s, transform 0.2s ease-in-out;
+}
+
+#clear-cart:hover, #close-cart:hover {
+    background: #c0a042;
+    transform: translateY(-2px);
+}
+    </style>
+</head>
+<body>
+    <header>
+        <nav>
+            <a href="#" class="logo">Чёрный Дилер</a>
+            <div class="nav-links">
+                <a href="#products">Продукция</a>
+                <a href="#about">О нас</a>
+                <a href="#contacts">Контакты</a>
+            </div>
+        </nav>
+    </header>
+
+    <section class="hero">
+        <div class="hero-content">
+            <h1>Натуральная продукция прямо с наших грядок</h1>
+            <p>Легкодоступный товар, экологичная упаковка, доставка по всей стране</p>
+            <a href="#products" class="cta-btn">Выбрать муку</a>
+        </div>
+    </section>
+
+    <section class="products" id="products">
+        <h2>Наша продукция</h2>
+        <div class="product-grid">
+
+            <div class="product-card">
+                <div class="product-image" style="background-image: url('https://external-content.duckduckgo.com/iu/?u=https%3A%2F%2Fcentervasilenko.ua%2Fwp-content%2Fuploads%2F2020%2F02%2Fkokain.jpg&f=1&nofb=1&ipt=156638a7c9cc3722b36ef0cb93fd70eace6721322039d15da9324a820e035f78&ipo=images')"></div>
+                <div class="product-info">
+                    <h3>Кокаин</h3>
+                    <p>Высший сорт, 5 г</p>
+                    <div class="price">349,99 €</div>
+                    <button class="cta-btn">В корзину</button>
+                </div>
+            </div>
+
+
+            <div class="product-card">
+                <div class="product-image" style="background-image: url('https://external-content.duckduckgo.com/iu/?u=https%3A%2F%2Fnc-newlife.com%2Fwp-content%2Fuploads%2F2020%2F08%2Fbutirat-1.jpeg&f=1&nofb=1&ipt=106f5a1b7bfbad5fb24dde4f89e8a9883f98afac16826af569a7776da3332635&ipo=images')"></div>
+                <div class="product-info">
+                    <h3>Бутират</h3>
+                    <p>Распространенный и дешевый, 5 г</p>
+                    <div class="price">49,99 €</div>
+                    <button class="cta-btn">В корзину</button>
+                </div>
+            </div>
+
+
+            <div class="product-card">
+                <div class="product-image" style="background-image: url('https://external-content.duckduckgo.com/iu/?u=https%3A%2F%2Fpngimg.com%2Fuploads%2Fteat_bag%2Fteat_bag_PNG37.png&f=1&nofb=1&ipt=14821c43dcea302728357285b69c2a76218821bbf6ab4ce67fed63df7f501230&ipo=images')"></div>
+                <div class="product-info">
+                    <h3>Я не знаю что дальше писать</h3>
+                    <p>Прям совсем, 0 кг</p>
+                    <div class="price">0 € (доставка в вашем регионе не поддерживается)</div>
+                    <button class="cta-btn">В корзину</button>
+                </div>
+            </div>
+
+
+            <div class="product-card">
+                <div class="product-image" style="background-image: url('https://external-content.duckduckgo.com/iu/?u=https%3A%2F%2Feverest-dom.org.ua%2Fwp-content%2Fuploads%2F2018%2F01%2F1662dcb5ec8a6af8b5250568b33d1911.jpg&f=1&nofb=1&ipt=76eac0209a35e6bb756401434db072f25b19442422bddbba1a3dfb85e338990b&ipo=images')"></div>
+                <div class="product-info">
+                    <h3>Героин</h3>
+                    <p>О придумал, 5 г</p>
+                    <div class="price">329,99 €</div>
+                    <button class="cta-btn">В корзину</button>
+                </div>
+            </div>
+
+
+            <div class="product-card">
+                <div class="product-image" style="background-image: url('https://external-content.duckduckgo.com/iu/?u=https%3A%2F%2Fvictorycentr.com%2Fwp-content%2Fuploads%2F2021%2F01%2Fmetamf.jpg&f=1&nofb=1&ipt=1861cb8f7b4f32b6b1043573dd5baf66f9e6233fdb925d4bf3348e11641f90ad&ipo=images')"></div>
+                <div class="product-info">
+                    <h3>Метамфетамин</h3>
+                    <p>Для наслаждения, 111111 кг</p>
+                    <div class="price">2,99 €</div>
+                    <button class="cta-btn">В корзину</button>
+                </div>
+            </div>
+
+
+            <div class="product-card">
+                <div class="product-image" style="background-image: url('https://external-content.duckduckgo.com/iu/?u=https%3A%2F%2Fsvoboda.in.ua%2Fwp-content%2Fuploads%2F2020%2F09%2Fzavisimost-matamfetamin.jpg&f=1&nofb=1&ipt=b154fd05221ff24202988af66c3575063c7c6c872736884b84b8c86afbc27f49&ipo=images')"></div>
+                <div class="product-info">
+                    <h3>Бля скучно</h3>
+                    <p>Для здоровья, 1 кг</p>
+                    <div class="price">459,99 €</div>
+                    <button class="cta-btn">В корзину</button>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <script>
+
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.style.opacity = 1;
+                    entry.target.style.transform = 'translateY(0)';
+                }
+            });
+        });
+
+        document.querySelectorAll('.product-card').forEach((el) => {
+            el.style.opacity = 0;
+            el.style.transform = 'translateY(30px)';
+            observer.observe(el);
+        });
+
+
+        document.querySelectorAll('.cta-btn').forEach(btn => {
+            btn.addEventListener('click', () => {
+                btn.textContent = 'Добавлено!';
+                setTimeout(() => {
+                    btn.textContent = 'В корзину';
+                }, 2000);
+            });
+        });
+    </script>
+
+<div id="cart-modal" class="cart-modal">
+    <div class="cart-content">
+        <h2>Корзина</h2>
+        <div id="cart-items"></div>
+        <p id="cart-total">Итого: 0 €</p>
+        <button id="clear-cart">Очистить корзину</button>
+        <button id="close-cart">Закрыть</button>
+    </div>
+</div>
+
+
+<div id="cart-icon" class="cart-icon">
+    🛒 <span id="cart-count">0</span>
+</div>
+<script>
+
+    let cart = [];
+    let total = 0;
+
+
+    function updateCart() {
+        const cartItems = document.getElementById('cart-items');
+        const cartCount = document.getElementById('cart-count');
+        const cartTotal = document.getElementById('cart-total');
+
+
+        cartItems.innerHTML = '';
+
+
+        cart.forEach(item => {
+            const itemElement = document.createElement('div');
+            itemElement.innerHTML = `
+                <span>${item.name} (${item.price} €)</span>
+                <span>Количество: ${item.quantity}</span>
+            `;
+            cartItems.appendChild(itemElement);
+        });
+
+
+        cartTotal.textContent = `Итого: ${total} €`;
+
+
+        cartCount.textContent = cart.reduce((sum, item) => sum + item.quantity, 0);
+    }
+
+
+    document.querySelectorAll('.cta-btn').forEach(btn => {
+        btn.addEventListener('click', () => {
+            const productCard = btn.closest('.product-card');
+            const productName = productCard.querySelector('h3').textContent;
+            const productPrice = parseInt(productCard.querySelector('.price').textContent);
+
+
+            const existingItem = cart.find(item => item.name === productName);
+            if (existingItem) {
+                existingItem.quantity += 1;
+            } else {
+                cart.push({ name: productName, price: productPrice, quantity: 1 });
+            }
+
+
+            total += productPrice;
+
+
+            updateCart();
+
+
+            btn.textContent = 'Добавлено!';
+            setTimeout(() => {
+                btn.textContent = 'В корзину';
+            }, 2000);
+        });
+    });
+
+
+    document.getElementById('cart-icon').addEventListener('click', () => {
+        const cartModal = document.getElementById('cart-modal');
+        cartModal.classList.add('active');
+    });
+
+
+    document.getElementById('close-cart').addEventListener('click', () => {
+        const cartModal = document.getElementById('cart-modal');
+        cartModal.classList.remove('active');
+    });
+
+
+    document.getElementById('clear-cart').addEventListener('click', () => {
+        cart = [];
+        total = 0;
+        updateCart();
+    });
+</script>
+</script>
+</body>
+</html>
